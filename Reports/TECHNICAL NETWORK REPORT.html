@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Technical Network Report – Campbound</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    --accent:   #2d6a4f;
+    --accent2:  #52b788;
+    --bg:       #f8f9f7;
+    --surface:  #ffffff;
+    --border:   #d8e3dc;
+    --text:     #1a2e22;
+    --muted:    #5a7464;
+    --code-bg:  #eef4f0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  /* ── Cover strip ── */
+  .cover {
+    background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 60%, #52b788 100%);
+    color: #fff;
+    padding: 56px 64px 48px;
+  }
+  .cover .tag {
+    display: inline-block;
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.3);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 12px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .cover h1 {
+    font-size: 2.6rem;
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 12px;
+  }
+  .cover .sub { font-size: 1.1rem; opacity: .85; margin-bottom: 32px; }
+  .cover .meta {
+    display: flex; gap: 36px; flex-wrap: wrap;
+    border-top: 1px solid rgba(255,255,255,.2);
+    padding-top: 24px; font-size: 13px; opacity: .8;
+  }
+  .cover .meta strong { display: block; opacity: .6; font-size: 11px; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 2px; }
+
+  /* ── Body wrapper ── */
+  .body { max-width: 900px; margin: 0 auto; padding: 48px 48px 80px; }
+
+  /* ── TOC ── */
+  .toc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin-bottom: 48px;
+  }
+  .toc h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .09em; color: var(--muted); margin-bottom: 16px; }
+  .toc ol { padding-left: 20px; }
+  .toc li { margin-bottom: 6px; }
+  .toc a { color: var(--accent); text-decoration: none; font-weight: 500; }
+  .toc a:hover { text-decoration: underline; }
+
+  /* ── Sections ── */
+  section { margin-bottom: 56px; }
+
+  .section-header {
+    display: flex; align-items: flex-start; gap: 18px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--border);
+  }
+  .section-num {
+    flex-shrink: 0;
+    width: 40px; height: 40px;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 16px;
+    margin-top: 2px;
+  }
+  .section-header h2 { font-size: 1.45rem; font-weight: 700; line-height: 1.2; }
+  .section-header .section-sub { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+  h3 {
+    font-size: 1.05rem; font-weight: 600; color: var(--accent);
+    margin: 28px 0 12px;
+    padding-left: 12px;
+    border-left: 3px solid var(--accent2);
+  }
+
+  p { margin-bottom: 14px; }
+
+  /* ── Tables ── */
+  .table-wrap { overflow-x: auto; margin: 16px 0 24px; border-radius: 10px; border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  thead { background: var(--accent); color: #fff; }
+  thead th { padding: 12px 16px; text-align: left; font-weight: 600; font-size: 13px; letter-spacing: .03em; }
+  tbody tr { border-bottom: 1px solid var(--border); }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:nth-child(even) { background: var(--code-bg); }
+  tbody td { padding: 11px 16px; vertical-align: top; line-height: 1.5; }
+  td code, th code { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; background: rgba(0,0,0,.07); padding: 1px 5px; border-radius: 4px; }
+
+  /* ── Code blocks ── */
+  pre {
+    background: #1a2e22;
+    color: #b7e4c7;
+    border-radius: 10px;
+    padding: 20px 22px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    overflow-x: auto;
+    margin: 16px 0 24px;
+  }
+  pre .comment { color: #52b788; }
+  pre .kw { color: #95d5b2; font-style: italic; }
+
+  /* ── Callout boxes ── */
+  .callout {
+    display: flex; gap: 14px; align-items: flex-start;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent2);
+    border-radius: 0 10px 10px 0;
+    padding: 16px 18px;
+    margin: 16px 0 24px;
+    font-size: 14px;
+  }
+  .callout.warn { border-left-color: #d4a017; }
+  .callout.danger { border-left-color: #c0392b; }
+  .callout-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .callout p:last-child { margin-bottom: 0; }
+
+  /* ── Flow diagram ── */
+  .flow {
+    display: flex; flex-direction: column; gap: 0;
+    margin: 16px 0 24px;
+  }
+  .flow-step {
+    display: flex; gap: 16px; align-items: flex-start;
+  }
+  .flow-line {
+    display: flex; flex-direction: column; align-items: center; flex-shrink: 0;
+  }
+  .flow-dot {
+    width: 14px; height: 14px;
+    background: var(--accent);
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 5px;
+  }
+  .flow-connector {
+    width: 2px; height: 24px;
+    background: var(--accent2);
+    opacity: .5;
+  }
+  .flow-content {
+    padding-bottom: 4px;
+  }
+  .flow-content strong { color: var(--accent); }
+
+  /* ── Badge pills ── */
+  .badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 12px; font-weight: 600;
+    letter-spacing: .03em;
+  }
+  .badge-green  { background: #d8f3dc; color: #1b4332; }
+  .badge-red    { background: #fde8e8; color: #7b2424; }
+  .badge-yellow { background: #fef9e7; color: #7d5800; }
+  .badge-blue   { background: #e8f4fd; color: #1a3a5c; }
+
+  /* ── Version banner ── */
+  .versions {
+    display: flex; gap: 12px; flex-wrap: wrap; margin: 16px 0 24px;
+  }
+  .version-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 20px;
+    min-width: 160px;
+  }
+  .version-card .vc-label { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 4px; }
+  .version-card .vc-val { font-size: 1.05rem; font-weight: 700; color: var(--accent); font-family: 'JetBrains Mono', monospace; }
+
+  /* ── Footer ── */
+  footer {
+    text-align: center; padding: 28px;
+    color: var(--muted); font-size: 12px;
+    border-top: 1px solid var(--border);
+    margin-top: 24px;
+  }
+
+  ul { padding-left: 20px; margin-bottom: 14px; }
+  ul li { margin-bottom: 6px; }
+
+  @media print {
+    .cover { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    section { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════ COVER ════════════════════ -->
+<div class="cover">
+  <div class="tag">Technical Network Report</div>
+  <h1>Campbound</h1>
+  <p class="sub">3D Asymmetric Multiplayer Nature Survival — Networking Architecture</p>
+  <div class="meta">
+    <div><strong>Course</strong>Multiplayer Game Development – Midterm</div>
+    <div><strong>Students</strong>Tolga Dıgdıgoğlu · Yusuf Durak · Ömer Efe Acar</div>
+    <div><strong>Date</strong>April 8, 2026</div>
+    <div><strong>Engine</strong>Unity 6000.3.6f1 · NGO 2.11.0</div>
+  </div>
+</div>
+
+<!-- ════════════════════ BODY ════════════════════ -->
+<div class="body">
+
+  <!-- Table of Contents -->
+  <div class="toc">
+    <h2>Contents</h2>
+    <ol>
+      <li><a href="#s1">Project Overview</a></li>
+      <li><a href="#s2">Scene and Prefab Structure</a></li>
+      <li><a href="#s3">NetworkObject Inventory</a></li>
+      <li><a href="#s4">Data Synchronization</a></li>
+      <li><a href="#s5">Connection Flow Step by Step</a></li>
+      <li><a href="#s6">Input and Authority Model</a></li>
+      <li><a href="#s7">Known Limitations and Future Work</a></li>
+    </ol>
+  </div>
+
+  <!-- ══ SECTION 1 ══ -->
+  <section id="s1">
+    <div class="section-header">
+      <div class="section-num">1</div>
+      <div>
+        <h2>Project Overview</h2>
+        <div class="section-sub">What the game is · Player count · Engine versions</div>
+      </div>
+    </div>
+
+    <h3>What the game is</h3>
+    <p>Campbound is a <strong>2-player, 3D asymmetric co-op survival</strong> game. Its design philosophy, documented in the accompanying Market Research Report, addresses a core flaw in the survival genre: <em>"Role Overlap,"</em> where both players perform identical tasks and cooperation becomes meaningless. Campbound's solution is <strong>forced specialization</strong> — two players occupy roles so distinct that neither can survive without the other:</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Role</th><th>Perspective</th><th>Core Responsibility</th><th>Failure State</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>The Keeper</strong></td>
+            <td>Camp management &amp; strategy</td>
+            <td>Maintain campfire heat, cook food, fortify the base</td>
+            <td>Scout dies without warmth/food</td>
+          </tr>
+          <tr>
+            <td><strong>The Gatherer</strong></td>
+            <td>Action &amp; exploration</td>
+            <td>Scavenge dry wood, forage ingredients, avoid wildlife</td>
+            <td>Camp starves without resources</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Target platform: <strong>PC (Steam)</strong>, premium pricing at <strong>$19.99</strong>, aiming for a 7.5/10+ user score by prioritising the "Communication Loop" between the two players.</p>
+
+    <h3>Engine &amp; Framework Versions</h3>
+    <div class="versions">
+      <div class="version-card"><div class="vc-label">Unity Editor</div><div class="vc-val">6000.3.6f1</div></div>
+      <div class="version-card"><div class="vc-label">NGO Version</div><div class="vc-val">2.11.0</div></div>
+      <div class="version-card"><div class="vc-label">Unity Transport</div><div class="vc-val">2.6.0</div></div>
+      <div class="version-card"><div class="vc-label">URP</div><div class="vc-val">17.3.0</div></div>
+      <div class="version-card"><div class="vc-label">Player Count</div><div class="vc-val">2 (1+1)</div></div>
+      <div class="version-card"><div class="vc-label">Topology</div><div class="vc-val">Host + Client</div></div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 2 ══ -->
+  <section id="s2">
+    <div class="section-header">
+      <div class="section-num">2</div>
+      <div>
+        <h2>Scene and Prefab Structure</h2>
+        <div class="section-sub">Scene inventory · Prefab inventory · Component breakdown</div>
+      </div>
+    </div>
+
+    <h3>Scenes</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Scene Path</th><th>Purpose</th><th>In Game?</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><code>Assets/Scenes/SampleScene.unity</code></td>
+            <td>The single gameplay scene. Contains all in-world objects, NetworkManager, and the HUD.</td>
+            <td><span class="badge badge-green">Yes</span></td>
+          </tr>
+          <tr>
+            <td><code>Assets/TextMesh Pro/Examples &amp; Extras/Scenes/*.unity</code> (31 files)</td>
+            <td>Third-party TMP demo scenes (word wrap, shaders, masking, etc.).</td>
+            <td><span class="badge badge-red">No</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>SampleScene Root Objects</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>GameObject</th><th>Key Components</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td><code>Main Camera</code></td><td>Camera</td><td>Deactivated at runtime by <code>ThirdPersonCamera</code> for the local owner.</td></tr>
+          <tr><td><code>Directional Light</code></td><td>Light</td><td>Scene lighting only.</td></tr>
+          <tr><td><code>Global Volume</code></td><td>Volume (URP post-processing)</td><td>Visual effects.</td></tr>
+          <tr><td><code>NetworkManager</code></td><td><code>NetworkManager</code>, <code>UnityTransport</code></td><td>NGO bootstrap singleton. Address: <code>127.0.0.1:7777</code>, TickRate: 30.</td></tr>
+          <tr><td><code>Plane</code></td><td>MeshRenderer, MeshCollider</td><td>Ground surface.</td></tr>
+          <tr><td><code>HUD</code> (Canvas)</td><td>Canvas, <em>Host</em> button, <em>Client</em> button, TMP labels</td><td>Hidden after connection via <code>NetworkUI.HideUI()</code>.</td></tr>
+          <tr><td><code>GameManager</code></td><td><code>NetworkUI</code></td><td>Handles button callbacks; not a NetworkObject.</td></tr>
+          <tr><td><code>EventSystem</code></td><td><code>StandaloneInputModule</code></td><td>Legacy UI input.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout">
+      <div class="callout-icon">ℹ️</div>
+      <div><p>The <strong>Player</strong> is not placed in-scene. NGO spawns it automatically from <code>NetworkManager.PlayerPrefab</code> when each client connects (<code>AutoSpawnPlayerPrefabClientSide: 1</code>).</p></div>
+    </div>
+
+    <h3>Prefabs</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Prefab Path</th><th>Key Components</th><th>In Game?</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><code>Assets/Prefabs/Player.prefab</code></td>
+            <td><code>NetworkObject</code>, <code>PlayerMovement</code>, <code>ThirdPersonCamera</code>, <code>ClientNetworkTransform</code>, <code>CapsuleCollider</code></td>
+            <td><span class="badge badge-green">Yes</span></td>
+          </tr>
+          <tr>
+            <td><code>Assets/TextMesh Pro/Examples &amp; Extras/Prefabs/*.prefab</code></td>
+            <td>TMP text demo components</td>
+            <td><span class="badge badge-red">No</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 3 ══ -->
+  <section id="s3">
+    <div class="section-header">
+      <div class="section-num">3</div>
+      <div>
+        <h2>NetworkObject Inventory</h2>
+        <div class="section-sub">Every object with a NetworkObject component · Scripts · Ownership</div>
+      </div>
+    </div>
+
+    <p>There is <strong>one networked object</strong> in the project: the <strong>Player prefab</strong>. It is registered in <code>DefaultNetworkPrefabs.asset</code> and assigned as <code>NetworkManager.PlayerPrefab</code>.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Object</th><th>NetworkBehaviour Scripts</th><th>Ownership Model</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Player.prefab</strong></td>
+            <td><code>PlayerMovement</code>, <code>ThirdPersonCamera</code>, <code>ClientNetworkTransform</code></td>
+            <td><span class="badge badge-blue">Client-owned (owner-authoritative)</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Script Detail: ClientNetworkTransform</h3>
+    <pre><span class="comment">// Subclasses NGO's built-in NetworkTransform.
+// Single override turns off server authority.</span>
+[DisallowMultipleComponent]
+<span class="kw">public class</span> ClientNetworkTransform : NetworkTransform
+{
+    <span class="kw">protected override bool</span> OnIsServerAuthoritative() => <span class="kw">false</span>;
+}</pre>
+    <p>Returning <code>false</code> makes the <strong>owning client</strong> the writer of position/rotation. NGO's built-in delta-compression and snapshot system handles the broadcast to all other peers.</p>
+
+    <h3>Script Detail: PlayerMovement</h3>
+    <pre><span class="kw">public class</span> PlayerMovement : NetworkBehaviour
+{
+    <span class="kw">public override void</span> OnNetworkSpawn()
+    {
+        <span class="kw">if</span> (!IsOwner) { enabled = <span class="kw">false</span>; <span class="kw">return</span>; }  <span class="comment">// Non-owners do nothing</span>
+        thirdPersonCamera = GetComponent&lt;ThirdPersonCamera&gt;();
+    }
+
+    <span class="kw">private void</span> Update()
+    {
+        <span class="comment">// Read legacy Input, compute direction relative to camera facing</span>
+        Vector3 direction = (camForward * vertical + camRight * horizontal).normalized;
+        transform.position += direction * moveSpeed * Time.deltaTime;   <span class="comment">// Local mutation</span>
+        transform.rotation  = Quaternion.RotateTowards(...);             <span class="comment">// Local mutation</span>
+    }
+}</pre>
+
+    <h3>Script Detail: ThirdPersonCamera</h3>
+    <pre><span class="kw">public class</span> ThirdPersonCamera : NetworkBehaviour
+{
+    <span class="kw">public override void</span> OnNetworkSpawn()
+    {
+        <span class="kw">if</span> (!IsOwner) { enabled = <span class="kw">false</span>; <span class="kw">return</span>; }  <span class="comment">// No camera for non-owners</span>
+        Camera.main.gameObject.SetActive(<span class="kw">false</span>);       <span class="comment">// Disable scene camera</span>
+        <span class="comment">// Spawn a dedicated camera for this client</span>
+        GameObject camObj = <span class="kw">new</span> GameObject($"PlayerCamera_{OwnerClientId}");
+        camObj.AddComponent&lt;Camera&gt;();
+        Cursor.lockState = CursorLockMode.Locked;
+    }
+
+    <span class="comment">// Exposes PlanarForward / PlanarRight for PlayerMovement to use</span>
+    <span class="kw">public</span> Vector3 PlanarForward { <span class="kw">get; private set;</span> }
+    <span class="kw">public</span> Vector3 PlanarRight   { <span class="kw">get; private set;</span> }
+}</pre>
+  </section>
+
+  <!-- ══ SECTION 4 ══ -->
+  <section id="s4">
+    <div class="section-header">
+      <div class="section-num">4</div>
+      <div>
+        <h2>Data Synchronization</h2>
+        <div class="section-sub">NetworkVariables · RPCs · What crosses the wire</div>
+      </div>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div><p><strong>No custom NetworkVariables or RPCs are defined</strong> in this project. All data that crosses the network is the player's <code>position</code> and <code>rotation</code>, sent automatically by <code>ClientNetworkTransform</code>.</p></div>
+    </div>
+
+    <h3>What crosses the wire</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Mechanism</th><th>Data Synced</th><th>Writer</th><th>Readers</th><th>Frequency</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><code>ClientNetworkTransform</code> (inherits <code>NetworkTransform</code>)</td>
+            <td>Player <code>position</code> (Vector3) + <code>rotation</code> (Quaternion)</td>
+            <td><strong>Owning client</strong></td>
+            <td>All other clients + host</td>
+            <td>30 ticks/sec (interpolated)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>NetworkManager Configuration</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Setting</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Tick Rate</td><td>30 ticks/second</td></tr>
+          <tr><td>Connection Approval</td><td>Disabled (any peer accepted)</td></tr>
+          <tr><td>Enable Scene Management</td><td>Enabled</td></tr>
+          <tr><td>Auto Spawn Player Prefab</td><td>Enabled (client-side)</td></tr>
+          <tr><td>Network Topology</td><td>Client-Server (host model)</td></tr>
+          <tr><td>Transport Address</td><td>127.0.0.1:7777 (UTP, no WebSocket, no TLS)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 5 ══ -->
+  <section id="s5">
+    <div class="section-header">
+      <div class="section-num">5</div>
+      <div>
+        <h2>Connection Flow Step by Step</h2>
+        <div class="section-sub">Join · Spawn · Disconnect lifecycle</div>
+      </div>
+    </div>
+
+    <h3>Joining the Session</h3>
+    <div class="flow">
+      <div class="flow-step">
+        <div class="flow-line"><div class="flow-dot"></div><div class="flow-connector"></div></div>
+        <div class="flow-content"><p><strong>Both players launch the game.</strong> <code>SampleScene</code> loads. The HUD canvas is visible with Host and Client buttons.</p></div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-line"><div class="flow-dot"></div><div class="flow-connector"></div></div>
+        <div class="flow-content"><p><strong>Player A presses "Host."</strong> <code>NetworkUI.StartHost()</code> calls <code>NetworkManager.Singleton.StartHost()</code>. UTP begins listening on <code>127.0.0.1:7777</code>. Connection approval is off — all connections are accepted. The host's own Player prefab is spawned immediately. <code>HideUI()</code> is called, hiding the canvas.</p></div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-line"><div class="flow-dot"></div><div class="flow-connector"></div></div>
+        <div class="flow-content"><p><strong>Player B presses "Client."</strong> <code>NetworkUI.StartClient()</code> calls <code>NetworkManager.Singleton.StartClient()</code>. UTP connects to <code>127.0.0.1:7777</code>.</p></div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-line"><div class="flow-dot"></div><div class="flow-connector"></div></div>
+        <div class="flow-content"><p><strong>NGO handshake completes.</strong> The host spawns a Player prefab for Player B on all connected machines. <code>HideUI()</code> is called on Player B's machine.</p></div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-line"><div class="flow-dot"></div></div>
+        <div class="flow-content"><p><strong>Both players are in-world.</strong> Each machine has two Player objects: one owned locally, one replicated. <code>ClientNetworkTransform</code> begins syncing positions at 30 Hz.</p></div>
+      </div>
+    </div>
+
+    <h3>On Spawn (OnNetworkSpawn)</h3>
+    <p>For each spawned Player object, NGO calls <code>OnNetworkSpawn()</code> on all <code>NetworkBehaviour</code> components:</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Machine</th><th>PlayerMovement</th><th>ThirdPersonCamera</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Owning client</strong></td>
+            <td>Script stays enabled. Fetches reference to <code>ThirdPersonCamera</code>.</td>
+            <td>Disables <code>Main Camera</code>. Spawns a new <code>Camera</code> GameObject. Locks cursor.</td>
+          </tr>
+          <tr>
+            <td><strong>All other machines</strong></td>
+            <td><code>enabled = false</code>. No input read, no movement.</td>
+            <td><code>enabled = false</code>. No camera created.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>On Disconnect</h3>
+    <ul>
+      <li>If the <strong>host disconnects</strong>, all clients are kicked (no host migration is implemented).</li>
+      <li>When a Player object is despawned, <code>ThirdPersonCamera.OnDestroy()</code> fires. If <code>IsOwner</code>, it releases the cursor lock (<code>CursorLockMode.None</code>, <code>Cursor.visible = true</code>).</li>
+      <li>The HUD canvas is <strong>not</strong> re-shown after disconnect — this is a known limitation (see Section 7).</li>
+    </ul>
+  </section>
+
+  <!-- ══ SECTION 6 ══ -->
+  <section id="s6">
+    <div class="section-header">
+      <div class="section-num">6</div>
+      <div>
+        <h2>Input and Authority Model</h2>
+        <div class="section-sub">Who handles input · Where movement is calculated · Cheating prevention</div>
+      </div>
+    </div>
+
+    <h3>Who handles input</h3>
+    <p>Input is read <strong>exclusively on the owning client</strong> inside <code>PlayerMovement.Update()</code> and <code>ThirdPersonCamera.Update()</code>. Both scripts exit early (<code>enabled = false</code>) on non-owner instances, so remote player objects never read local input. The project uses Unity's <strong>legacy <code>UnityEngine.Input</code> API</strong> — the new Input System package (<code>com.unity.inputsystem</code>) is not installed.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Input</th><th>Axis</th><th>Consumer</th></tr></thead>
+        <tbody>
+          <tr><td>Move forward / back</td><td><code>"Vertical"</code></td><td><code>PlayerMovement.Update()</code></td></tr>
+          <tr><td>Move left / right</td><td><code>"Horizontal"</code></td><td><code>PlayerMovement.Update()</code></td></tr>
+          <tr><td>Camera yaw (left/right)</td><td><code>"Mouse X"</code></td><td><code>ThirdPersonCamera.Update()</code></td></tr>
+          <tr><td>Camera pitch (up/down)</td><td><code>"Mouse Y"</code></td><td><code>ThirdPersonCamera.Update()</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Where movement is calculated</h3>
+    <p>Movement is calculated <strong>entirely on the owning client</strong>. The data flow is:</p>
+    <pre><span class="comment">// 1. Owner reads input axes (legacy UnityEngine.Input)</span>
+float horizontal = Input.GetAxis("Horizontal");
+float vertical   = Input.GetAxis("Vertical");
+
+<span class="comment">// 2. Direction computed relative to the camera's yaw</span>
+Vector3 direction = (camForward * vertical + camRight * horizontal).normalized;
+
+<span class="comment">// 3. Transform mutated LOCALLY on the owner</span>
+transform.position += direction * moveSpeed * Time.deltaTime;
+
+<span class="comment">// 4. ClientNetworkTransform detects the delta and sends it to the server/other clients</span>
+<span class="comment">//    (handled internally by NGO — no custom RPC needed)</span></pre>
+
+    <p>The <strong>server never recalculates movement</strong>. It receives the position update from the owning client and replicates it to all other peers.</p>
+
+    <h3>Cheating prevention</h3>
+    <div class="callout danger">
+      <div class="callout-icon">🚨</div>
+      <div>
+        <p><strong>There is no cheating prevention in the current build.</strong> The owner-authoritative model means a malicious client can freely manipulate <code>transform.position</code> and every other machine will display that position faithfully. There is no server-side validation of movement speed, position delta, or physics.</p>
+        <p>This is acceptable for a course prototype where both players are trusted peers, but it would need to be replaced with server-authoritative movement or server-side position validation before any public release.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 7 ══ -->
+  <section id="s7">
+    <div class="section-header">
+      <div class="section-num">7</div>
+      <div>
+        <h2>Known Limitations and Future Work</h2>
+        <div class="section-sub">What doesn't work · What was cut · What comes next</div>
+      </div>
+    </div>
+
+    <h3>What doesn't work yet</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Limitation</th><th>Detail</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>LAN-only connectivity</strong></td>
+            <td>Transport is hardcoded to <code>127.0.0.1:7777</code>. Players on different machines or networks cannot connect without Unity Relay + Lobby.</td>
+          </tr>
+          <tr>
+            <td><strong>No asymmetric roles</strong></td>
+            <td>Both players use the identical <code>Player</code> prefab with identical movement. The Keeper and Gatherer roles exist only in design documentation, not in code.</td>
+          </tr>
+          <tr>
+            <td><strong>No HUD restore on disconnect</strong></td>
+            <td>After disconnect, the connection canvas is not re-enabled. The player is stuck on an empty scene.</td>
+          </tr>
+          <tr>
+            <td><strong>No connection approval or matchmaking</strong></td>
+            <td>Any process that knows the IP can join. No lobby, room code, password, or session management exists.</td>
+          </tr>
+          <tr>
+            <td><strong>No survival loop</strong></td>
+            <td>No campfire, resource, health, heat, or hunger system. The core gameplay loop from the design document is entirely absent.</td>
+          </tr>
+          <tr>
+            <td><strong>No scene transitions</strong></td>
+            <td>Only one scene exists. No main menu, loading screen, lobby scene, or end-game screen.</td>
+          </tr>
+          <tr>
+            <td><strong>No cheating prevention</strong></td>
+            <td>Owner-authoritative movement with no server validation (see Section 6).</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>What was cut for scope</h3>
+    <ul>
+      <li><strong>Asymmetric perspectives</strong> — first-person view for The Gatherer and management-view for The Keeper were not implemented; both players share the same third-person camera.</li>
+      <li><strong>Environmental hazards</strong> — wildlife, weather, and terrain danger described in the design are absent.</li>
+      <li><strong>Inventory and resource systems</strong> — dry wood, food ingredients, and a resource economy were not built.</li>
+      <li><strong>Fire mechanics and heat levels</strong> — The Keeper's core responsibility has no implementation.</li>
+      <li><strong>AI Navigation</strong> — <code>com.unity.ai.navigation 2.0.9</code> is listed as a dependency but no NavMesh agents, NPCs, or AI wildlife exist in the scene.</li>
+    </ul>
+
+    <h3>What would be added with more time</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Feature</th><th>Technical Approach</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Internet connectivity</strong></td>
+            <td>Replace the hardcoded UTP loopback address with <strong>Unity Relay + Lobby</strong>. Players would create/join rooms with a shareable 6-digit code via Unity Gaming Services.</td>
+          </tr>
+          <tr>
+            <td><strong>Asymmetric role prefabs</strong></td>
+            <td>Connection approval callback assigns a role (Keeper / Gatherer) on join and spawns a different prefab per role, each with different <code>NetworkBehaviour</code> components and camera rigs.</td>
+          </tr>
+          <tr>
+            <td><strong>Server-authoritative movement</strong></td>
+            <td>Switch to default <code>NetworkTransform</code> (server-owned) or add a <code>[ServerRpc]</code> that validates position deltas against a max-speed threshold before applying them.</td>
+          </tr>
+          <tr>
+            <td><strong>Game state with NetworkVariables</strong></td>
+            <td>A <code>GameState</code> NetworkBehaviour on the host would hold <code>NetworkVariable&lt;float&gt;</code> fields for campfire heat, food stock, and player health — automatically replicated to all clients.</td>
+          </tr>
+          <tr>
+            <td><strong>RPCs for discrete events</strong></td>
+            <td>"Resource picked up", "fire extinguished", "player death" are one-time events well-suited to <code>[ServerRpc]</code> calls that update authoritative state and broadcast results via <code>[ClientRpc]</code>.</td>
+          </tr>
+          <tr>
+            <td><strong>Scene management</strong></td>
+            <td>Full flow: Main Menu → Lobby → Gameplay → Results, managed by NGO's built-in <code>NetworkSceneManager</code> for synchronized transitions.</td>
+          </tr>
+          <tr>
+            <td><strong>New Input System</strong></td>
+            <td>Migrate from legacy <code>Input.GetAxis</code> to <code>com.unity.inputsystem</code> for proper per-device isolation, gamepad support, and cleaner ownership gating.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  Campbound — Technical Network Report · Multiplayer Game Development Course · April 8, 2026<br>
+  Generated from source inspection of the Unity 6 / NGO 2.11.0 project repository.
+</footer>
+
+</body>
+</html>
