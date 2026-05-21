@@ -120,6 +120,19 @@ namespace Campbound.Network
             WoodAddedToFireClientRpc();
         }
 
+        // Server-only entry point used by Campfire interaction. Unlike the RPC
+        // above, this is called directly from server code (PlayerInteraction's
+        // ServerRpc -> Campfire.TryAddWood -> here) so it doesn't need its own
+        // RPC plumbing. AddWoodServerRpc is kept above as the public RPC API.
+        public void AddWoodToFire()
+        {
+            if (!IsServer) return;
+            if (CurrentGameState.Value != GameState.Playing) return;
+
+            FireHeat.Value = Mathf.Min(FireHeat.Value + WoodHeatBonus, MaxFireHeat);
+            WoodAddedToFireClientRpc();
+        }
+
         [ClientRpc]
         public void WoodAddedToFireClientRpc()
         {

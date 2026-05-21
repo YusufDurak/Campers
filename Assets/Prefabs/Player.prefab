@@ -11,11 +11,13 @@ GameObject:
   - component: {fileID: 7510639254440596467}
   - component: {fileID: 4059350004072149811}
   - component: {fileID: 8254405565934786889}
-  - component: {fileID: 8135224478752100427}
   - component: {fileID: 3951508327121507041}
   - component: {fileID: 8762585215679931739}
   - component: {fileID: 2795953794465482313}
   - component: {fileID: -7623001271352564824}
+  - component: {fileID: 9083810403724879481}
+  - component: {fileID: 4331154441995856320}
+  - component: {fileID: 806497811760406017}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -95,29 +97,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &8135224478752100427
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4511309697591862327}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &3951508327121507041
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -158,6 +137,7 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   moveSpeed: 6
   rotationSpeed: 150
+  gravity: -20
 --- !u!114 &2795953794465482313
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -223,3 +203,61 @@ MonoBehaviour:
   SwitchTransformSpaceWhenParented: 0
   Interpolate: 1
   SlerpPosition: 0
+--- !u!114 &9083810403724879481
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4511309697591862327}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 526f5058d94faec44930033f9302e9c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Campbound.Player.PlayerInventory
+  ShowTopMostFoldoutHeaderGroup: 1
+  WoodCount:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
+--- !u!114 &4331154441995856320
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4511309697591862327}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf6e282961167f346a0196032403a959, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Campbound.Player.PlayerInteraction
+  ShowTopMostFoldoutHeaderGroup: 1
+  interactionRange: 2
+  interactKey: 101
+--- !u!143 &806497811760406017
+CharacterController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4511309697591862327}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Height: 2
+  m_Radius: 0.5
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 0, z: 0}
