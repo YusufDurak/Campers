@@ -1,9 +1,11 @@
 // LobbyUI is a plain MonoBehaviour (NOT a NetworkBehaviour). It lives on the
 // LobbyScene's Canvas and wires up the connection / ready flow:
 //   - Initially shows ConnectionPanel (Host/Client buttons handled by NetworkUI)
-//   - When the local client connects, swaps to ReadyPanel and unlocks the cursor
-//   - Toggles a local "isReady" bool on each press of the Ready button and
-//     reports the new value to the server via LobbyManager.SetReadyServerRpc
+//   - When the local client connects, swaps to ReadyPanel (cursor stays locked
+//     since ready toggling is keyboard-driven via readyKey)
+//   - Toggles a local "isReady" bool on each press of readyKey (or the Ready
+//     button, if clicked) and reports the new value to the server via
+//     LobbyManager.SetReadyServerRpc
 //   - Mirrors LobbyManager.HostReady / ClientReady NetworkVariables into a
 //     human-readable status text
 //
@@ -31,6 +33,9 @@ namespace Campbound.UI
         [SerializeField] private GameObject readyPanel;
         [SerializeField] private GameObject connectionPanel;
 
+        [Header("Input")]
+        [SerializeField] private KeyCode readyKey = KeyCode.R;
+
         private bool isReady;
         private bool subscribedToLobby;
         private Coroutine waitForLobbyRoutine;
@@ -40,7 +45,7 @@ namespace Campbound.UI
             if (readyPanel != null) readyPanel.SetActive(false);
             if (connectionPanel != null) connectionPanel.SetActive(true);
 
-            if (readyButtonText != null) readyButtonText.text = "Not Ready";
+            if (readyButtonText != null) readyButtonText.text = $"Press {readyKey} to Ready";
             if (statusText != null) statusText.text = string.Empty;
 
             if (readyButton != null)
@@ -75,6 +80,16 @@ namespace Campbound.UI
             UnsubscribeFromLobby();
         }
 
+        private void Update()
+        {
+            if (readyPanel == null || !readyPanel.activeSelf) return;
+
+            if (Input.GetKeyDown(readyKey))
+            {
+                OnReadyButtonClicked();
+            }
+        }
+
         private void OnClientConnected(ulong clientId)
         {
             if (NetworkManager.Singleton == null) return;
@@ -83,8 +98,11 @@ namespace Campbound.UI
             if (connectionPanel != null) connectionPanel.SetActive(false);
             if (readyPanel != null) readyPanel.SetActive(true);
 
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
+            // ReadyPanel is now keyboard-driven (readyKey toggles ready state),
+            // so we no longer need the cursor visible. Lock it for consistency
+            // with the in-game state.
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
 
             if (waitForLobbyRoutine != null) StopCoroutine(waitForLobbyRoutine);
             waitForLobbyRoutine = StartCoroutine(WaitForLobbyManager());
@@ -152,7 +170,7 @@ namespace Campbound.UI
             }
             else
             {
-                statusText.text = "Press Ready when prepared";
+                statusText.text = $"Press {readyKey} when ready";
             }
         }
 
@@ -169,7 +187,9 @@ namespace Campbound.UI
 
             if (readyButtonText != null)
             {
-                readyButtonText.text = isReady ? "Ready" : "Not Ready";
+                readyButtonText.text = isReady
+                    ? $"Ready ({readyKey} to cancel)"
+                    : $"Press {readyKey} to Ready";
             }
         }
     }
