@@ -18,6 +18,7 @@
 
 using Unity.Netcode;
 using UnityEngine;
+using Campbound.UI;
 
 namespace Campbound.Network
 {
@@ -143,6 +144,15 @@ namespace Campbound.Network
         public void EndGameClientRpc(bool won)
         {
             Debug.Log($"Game ended. Won: {won}");
+
+            if (EndPanelUI.Instance != null)
+            {
+                EndPanelUI.Instance.ShowResult(won);
+            }
+            else
+            {
+                Debug.LogWarning("[GameManager] EndPanelUI.Instance is null; end-of-match panel will not be shown on this client.");
+            }
         }
     }
 }

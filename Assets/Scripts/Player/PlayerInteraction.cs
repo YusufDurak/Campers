@@ -31,6 +31,12 @@ namespace Campbound.Player
         // obvious cheats (player half a map away calling AddWoodToFireServerRpc).
         private const float CampfireServerRangeSqr = 3f * 3f;
 
+        // Single global prompt set by the owning local player every frame and
+        // read by the InteractionPrompt UI script. PlayerInteraction.Update is
+        // disabled on non-owners (see OnNetworkSpawn), so only the local
+        // player's instance ever writes to this static.
+        public static string CurrentPrompt { get; private set; } = "";
+
         public override void OnNetworkSpawn()
         {
             if (!IsOwner)
@@ -42,13 +48,33 @@ namespace Campbound.Player
             Debug.Log($"[PlayerInteraction] enabled for owning client (OwnerClientId {OwnerClientId}).");
         }
 
+        public override void OnNetworkDespawn()
+        {
+            if (IsOwner)
+            {
+                CurrentPrompt = "";
+            }
+        }
+
         private void Update()
         {
-            if (GameManager.Instance == null) return;
-            if (GameManager.Instance.CurrentGameState.Value != GameState.Playing) return;
-            if (!Input.GetKeyDown(interactKey)) return;
+            if (GameManager.Instance == null)
+            {
+                CurrentPrompt = "";
+                return;
+            }
+
+            if (GameManager.Instance.CurrentGameState.Value != GameState.Playing)
+            {
+                CurrentPrompt = "";
+                return;
+            }
 
             FindNearestInteractables(out WoodPickup nearestWood, out Campfire nearestCampfire);
+
+            UpdatePrompt(nearestWood, nearestCampfire);
+
+            if (!Input.GetKeyDown(interactKey)) return;
 
             if (nearestWood != null)
             {
@@ -59,6 +85,31 @@ namespace Campbound.Player
             {
                 Debug.Log("[PlayerInteraction] Sending AddWoodToFireServerRpc.");
                 AddWoodToFireServerRpc();
+            }
+        }
+
+        private void UpdatePrompt(WoodPickup nearestWood, Campfire nearestCampfire)
+        {
+            PlayerInventory inventory = GetComponent<PlayerInventory>();
+            int woodCount = inventory != null ? inventory.WoodCount.Value : 0;
+            bool inventoryFull = woodCount >= PlayerInventory.MaxWood;
+            bool hasWood = woodCount > 0;
+
+            if (nearestWood != null && !inventoryFull)
+            {
+                CurrentPrompt = "Press E to pick up wood";
+            }
+            else if (nearestCampfire != null && hasWood)
+            {
+                CurrentPrompt = "Press E to add wood to fire";
+            }
+            else if (nearestCampfire != null)
+            {
+                CurrentPrompt = "Need wood first";
+            }
+            else
+            {
+                CurrentPrompt = "";
             }
         }
 
